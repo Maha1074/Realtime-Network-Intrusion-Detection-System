@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing URL Checker</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background: #0e1a2b;
+            color: #d0d0d0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #00bfae;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        form {
+            background: #1e2a38;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            max-width: 100%;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        label {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            display: block;
+            color: #00bfae;
+        }
+
+        input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #00bfae;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            background: #2a3d5c;
+            color: #d0d0d0;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: #00bfae;
+            color: #0e1a2b;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 1rem;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #009f95;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #1e2a38;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #00bfae;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            color: #d0d0d0;
+            text-align: center;
+        }
+
+        .close {
+            color: #00bfae;
+            float: right;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #009f95;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #result {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #ff4c4c; /* Default to red for phishing result */
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            form {
+                padding: 15px;
+            }
+
+            input[type="text"] {
+                font-size: 0.9rem;
+            }
+
+            button {
+                font-size: 0.9rem;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 20% auto;
+                padding: 15px;
+            }
+
+            .close {
+                font-size: 1.2em;
+            }
+
+            #result {
+                font-size: 1em;
+            }
+        }
+    </style>
+    <script>
+        async function checkUrl() {
+            const url = document.getElementById('url').value;
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ url: url }),
+            });
+
+            const data = await response.json();
+            const result = data.is_phishing.toUpperCase(); // Convert result to uppercase
+
+            // Update result text and color based on the result
+            const resultElement = document.getElementById('result');
+            resultElement.innerText = result;
+            if (result === 'PHISHING') {
+                resultElement.style.color = '#ff4c4c'; // Red for phishing
+            } else if (result === 'SAFE') {
+                resultElement.style.color = '#00bfae'; // Green for safe
+            } else {
+                resultElement.style.color = '#d0d0d0'; // Default color
+            }
+
+            // Show the modal with the result
+            document.getElementById('myModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('myModal').style.display = 'none';
+        }
+    </script>
+</head>
+<body>
+    <h1>Phishing URL Checker</h1>
+    <form onsubmit="event.preventDefault(); checkUrl();">
+        <label for="url">Enter URL:</label>
+        <input type="text" id="url" name="url" required>
+        <button type="submit">Check</button>
+    </form>
+
+    <!-- Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <p id="result"></p>
+        </div>
+    </div>
+</body>
+</html>
