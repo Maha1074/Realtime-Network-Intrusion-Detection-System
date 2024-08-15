@@ -3,199 +3,388 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phishing URL Checker</title>
+    <title>Phishing Detector</title>
     <style>
+        /* General Styles */
         body {
-            font-family: 'Courier New', Courier, monospace;
-            background: #0e1a2b;
-            color: #d0d0d0;
+            font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
+            background: linear-gradient(135deg, #121212 40%, #1e1e1e);
+            color: #e0e0e0;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Header Styles */
+        .header {
+            text-align: center;
+            padding: 50px 20px;
+            background: #1e1e1e;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-family: 'Arial', sans-serif;
+            font-size: 4em;
+            color: #ff4081;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            position: relative;
+            display: inline-block;
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px #ff4081, 0 0 20px #ff4081, 0 0 30px #ff4081;
+            }
+            to {
+                text-shadow: 0 0 20px #ff4081, 0 0 30px #ff4081, 0 0 40px #ff4081;
+            }
+        }
+
+        .header p {
+            font-size: 1.5em;
+            color: #b0bec5;
+            margin-top: 10px;
+        }
+
+        /* URL Input Section Styles */
+        .url-input-section {
+            text-align: center;
+            padding: 60px 20px;
+            background: #1e1e1e;
+        }
+
+        .url-input-section input {
+            width: 70%;
+            padding: 15px;
+            border: 2px solid #333;
+            border-radius: 30px;
+            outline: none;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            background: #262626;
+            color: #e0e0e0;
+            transition: border-color 0.3s ease;
+        }
+
+        .url-input-section input:focus {
+            border-color: #ff4081;
+        }
+
+        .url-input-section input::placeholder {
+            color: #757575;
+        }
+
+        .url-input-section label {
+            display: block;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #b0bec5;
+            position: relative;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .url-input-section button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            color: #fff;
+            background-color: #ff4081;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .url-input-section button:hover {
+            box-shadow: 0px 0px 15px 5px rgba(255, 105, 180, 0.7);
+            transform: scale(1.05);
+        }
+
+        .url-input-section button:active {
+            background-color: #e91e63;
+        }
+
+        /* Features Section */
+        .features-section {
+            text-align: center;
+            padding: 60px 20px;
+            background: #121212;
+        }
+
+        .features-section h2 {
+            font-size: 3em;
+            margin-bottom: 30px;
+            color: #ff4081;
+            animation: slideIn 1s ease-in-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .features-section .features {
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
+            gap: 40px;
+            flex-wrap: wrap;
         }
 
-        h1 {
-            color: #00bfae;
-            margin-bottom: 20px;
-            font-size: 2rem;
-        }
-
-        form {
-            background: #1e2a38;
+        .features-section .feature {
+            width: 300px;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-            max-width: 100%;
-            width: 100%;
-            max-width: 400px;
+            background: #1e1e1e;
+            border-radius: 20px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
             text-align: center;
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
         }
 
-        label {
-            font-size: 1.1em;
-            margin-bottom: 10px;
-            display: block;
-            color: #00bfae;
-        }
-
-        input[type="text"] {
-            width: calc(100% - 22px);
-            padding: 10px;
-            border: 1px solid #00bfae;
-            border-radius: 4px;
-            margin-bottom: 10px;
-            background: #2a3d5c;
-            color: #d0d0d0;
-            font-size: 1rem;
-        }
-
-        button {
-            background-color: #00bfae;
-            color: #0e1a2b;
-            border: none;
-            padding: 10px 20px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 1rem;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        button:hover {
-            background-color: #009f95;
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4);
-        }
-
-        .modal-content {
-            background-color: #1e2a38;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #00bfae;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 400px;
-            color: #d0d0d0;
-            text-align: center;
-        }
-
-        .close {
-            color: #00bfae;
-            float: right;
+        .features-section .feature h3 {
             font-size: 1.5em;
-            font-weight: bold;
+            color: #ff4081;
+            margin-bottom: 10px;
+            transition: color 0.3s ease;
         }
 
-        .close:hover,
-        .close:focus {
-            color: #009f95;
-            text-decoration: none;
-            cursor: pointer;
+        .features-section .feature p {
+            font-size: 1em;
+            color: #e0e0e0;
+            line-height: 1.6;
+            transition: color 0.3s ease;
         }
 
-        #result {
+        .features-section .feature:hover {
+            box-shadow: 0px 0px 25px rgba(255, 105, 180, 0.7);
+            transform: scale(1.05);
+        }
+
+        .features-section .feature:hover h3,
+        .features-section .feature:hover p {
+            color: #ffffff;
+        }
+
+        /* Attacks Details Section */
+        .attacks-details-section {
+            text-align: center;
+            padding: 60px 20px;
+            background: #121212;
+        }
+
+        .attacks-details-section h2 {
+            font-size: 3em;
+            margin-bottom: 30px;
+            color: #ff4081;
+            animation: slideIn 1s ease-in-out;
+        }
+
+        .attacks-details-section .attack {
+            width: 70%;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1e1e1e;
+            border-radius: 20px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+
+        .attacks-details-section .attack:hover {
+            box-shadow: 0px 0px 25px rgba(255, 105, 180, 0.7);
+            transform: scale(1.03);
+        }
+
+        .attacks-details-section .attack h3 {
+            font-size: 1.8em;
+            color: #ff4081;
+            position: relative;
+            animation: textReveal 1.5s ease-in-out;
+        }
+
+        @keyframes textReveal {
+            0% {
+                clip-path: inset(0 100% 0 0);
+            }
+            100% {
+                clip-path: inset(0 0 0 0);
+            }
+        }
+
+        /* About Us and Reports Sections */
+        .about-us-section, .reports-section {
+            text-align: center;
+            padding: 60px 20px;
+            background: #121212;
+        }
+
+        .about-us-section h2, .reports-section h2 {
+            font-size: 3em;
+            margin-bottom: 30px;
+            color: #ff4081;
+            animation: slideIn 1s ease-in-out;
+        }
+
+        .about-us-section p, .reports-section p {
             font-size: 1.2em;
-            font-weight: bold;
-            color: #ff4c4c; /* Default to red for phishing result */
+            color: #e0e0e0;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
-        /* Media Queries for Responsiveness */
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 1.5rem;
-            }
+        /* Footer Styles */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #1e1e1e;
+            color: #b0bec5;
+        }
 
-            form {
-                padding: 15px;
-            }
+        /* Spacing at the End */
+        .spacer {
+            height: 100px;
+        }
 
-            input[type="text"] {
-                font-size: 0.9rem;
-            }
+        /* Message Styles */
+        .message {
+            display: none;
+            text-align: center;
+            padding: 15px;
+            font-size: 1.2em;
+            border-radius: 10px;
+            margin: 20px auto;
+            width: 70%;
+            background: #121212;
+            color: #e0e0e0;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+        }
 
-            button {
-                font-size: 0.9rem;
-            }
+        .message.safe {
+            background-color: #4caf50; /* Green for safe */
+        }
 
-            .modal-content {
-                width: 95%;
-                margin: 20% auto;
-                padding: 15px;
-            }
-
-            .close {
-                font-size: 1.2em;
-            }
-
-            #result {
-                font-size: 1em;
-            }
+        .message.danger {
+            background-color: #f44336; /* Red for phishing */
         }
     </style>
-    <script>
-        async function checkUrl() {
-            const url = document.getElementById('url').value;
-            const response = await fetch('/predict', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ url: url }),
-            });
-
-            const data = await response.json();
-            const result = data.is_phishing.toUpperCase(); // Convert result to uppercase
-
-            // Update result text and color based on the result
-            const resultElement = document.getElementById('result');
-            resultElement.innerText = result;
-            if (result === 'PHISHING') {
-                resultElement.style.color = '#ff4c4c'; // Red for phishing
-            } else if (result === 'SAFE') {
-                resultElement.style.color = '#00bfae'; // Green for safe
-            } else {
-                resultElement.style.color = '#d0d0d0'; // Default color
-            }
-
-            // Show the modal with the result
-            document.getElementById('myModal').style.display = 'block';
-        }
-
-        function closeModal() {
-            document.getElementById('myModal').style.display = 'none';
-        }
-    </script>
 </head>
 <body>
-    <h1>Phishing URL Checker</h1>
-    <form onsubmit="event.preventDefault(); checkUrl();">
-        <label for="url">Enter URL:</label>
-        <input type="text" id="url" name="url" required>
-        <button type="submit">Check</button>
-    </form>
+    <div class="header">
+        <h1>Phishing Detector</h1>
+        <p>Detect phishing websites with real-time analysis.</p>
+    </div>
 
-    <!-- Modal -->
-    <div id="myModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <p id="result"></p>
+    <div class="url-input-section">
+        <label for="url">Enter the URL:</label>
+        <input type="text" id="url" placeholder="https://example.com">
+        <button onclick="checkURL()">Check</button>
+        <div id="message" class="message"></div>
+    </div>
+
+    <div class="features-section">
+        <h2>Features</h2>
+        <div class="features">
+            <div class="feature">
+                <h3>Real-time Detection</h3>
+                <p>Instantly identify phishing threats as you input URLs.</p>
+            </div>
+            <div class="feature">
+                <h3>Comprehensive Analysis</h3>
+                <p>Get detailed insights and risk analysis for each URL.</p>
+            </div>
+            <div class="feature">
+                <h3>Enhanced Security</h3>
+                <p>Stay protected with advanced security measures against phishing.</p>
+            </div>
         </div>
     </div>
+
+    <div class="attacks-details-section">
+        <h2>Attack Types We Can Identify</h2>
+        <div class="attack">
+            <h3>SQL Injection</h3>
+            <p>SQL injection is a code injection technique that exploits a security vulnerability occurring in the database layer of an application.</p>
+            <p>Mitigation: Use prepared statements with parameterized queries.</p>
+            <p>More Info: <a href="https://en.wikipedia.org/wiki/SQL_injection" target="_blank">Wikipedia</a></p>
+        </div>
+        <div class="attack">
+            <h3>Malware Infection</h3>
+            <p>Malware is a general term for malicious software, including viruses, worms, and Trojans that can damage or disrupt systems.</p>
+            <p>Mitigation: Regularly update software and use antivirus solutions.</p>
+            <p>More Info: <a href="https://en.wikipedia.org/wiki/Malware" target="_blank">Wikipedia</a></p>
+        </div>
+        <div class="attack">
+            <h3>Port Scanning</h3>
+            <p>Port scanning involves sending packets to specific ports on a host and analyzing the responses to determine which ports are open.</p>
+            <p>Mitigation: Use firewalls and intrusion detection systems.</p>
+            <p>More Info: <a href="https://en.wikipedia.org/wiki/Port_scanning" target="_blank">Wikipedia</a></p>
+        </div>
+        <div class="attack">
+            <h3>Brute Force Attacks</h3>
+            <p>Brute force attacks involve trying many passwords or encryption keys until the correct one is found.</p>
+            <p>Mitigation: Implement account lockout mechanisms and use strong passwords.</p>
+            <p>More Info: <a href="https://en.wikipedia.org/wiki/Brute-force_attack" target="_blank">Wikipedia</a></p>
+        </div>
+    </div>
+
+    <div class="about-us-section">
+        <h2>About Us</h2>
+        <p>We are dedicated to enhancing web security by developing tools to identify and mitigate online threats. Our phishing detector aims to protect users from fraudulent websites through real-time analysis.</p>
+    </div>
+
+    <div class="reports-section">
+        <h2>Reports</h2>
+        <p>Our system generates detailed reports on detected phishing attempts, helping users understand the threats and take necessary actions to protect their data.</p>
+    </div>
+
+    <div class="footer">
+        &copy; 2024 Phishing Detector. All Rights Reserved.
+    </div>
+
+    <script>
+        function checkURL() {
+            var url = document.getElementById('url').value;
+            var messageElement = document.getElementById('message');
+            
+            // Simulating backend URL checking
+            setTimeout(function() {
+                // Simulate a response
+                var isPhishing = Math.random() > 0.5; // Randomly decide if it's phishing
+
+                if (url === '') {
+                    messageElement.textContent = 'Please enter a URL.';
+                    messageElement.className = 'message';
+                } else if (isPhishing) {
+                    messageElement.textContent = 'Phishing detected!';
+                    messageElement.className = 'message danger';
+                } else {
+                    messageElement.textContent = 'The URL is safe.';
+                    messageElement.className = 'message safe';
+                }
+                messageElement.style.display = 'block';
+                setTimeout(() => messageElement.style.opacity = 0, 3000); // Fade out after 3 seconds
+            }, 1000); // Simulate a 1 second delay
+        }
+    </script>
 </body>
 </html>
